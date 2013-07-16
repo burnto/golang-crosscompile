@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/bin/zsh
 # Copyright 2012 The Go Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
 # support functions for go cross compilation
 
-PLATFORMS="darwin/386 darwin/amd64 freebsd/386 freebsd/amd64 freebsd/arm linux/386 linux/amd64 linux/arm windows/386 windows/amd64"
+PLATFORMS=(darwin/386 darwin/amd64 freebsd/386 freebsd/amd64 freebsd/arm linux/386 linux/amd64 linux/arm windows/386 windows/amd64)
 
 eval "$(go env)"
 
@@ -26,13 +26,13 @@ function go-crosscompile-build-all {
 	for PLATFORM in $PLATFORMS; do
 		CMD="go-crosscompile-build ${PLATFORM}"
 		echo "$CMD"
-		$CMD || FAILURES="$FAILURES $PLATFORM"
+\		eval $CMD || FAILURES="$FAILURES $PLATFORM"
 	done
 	if [ "$FAILURES" != "" ]; then
 	    echo "*** go-crosscompile-build-all FAILED on $FAILURES ***"
 	    return 1
 	fi
-}	
+}
 
 function go-all {
 	FAILURES=""
@@ -41,7 +41,7 @@ function go-all {
 		GOARCH=${PLATFORM#*/}
 		CMD="go-${GOOS}-${GOARCH} $@"
 		echo "$CMD"
-		$CMD || FAILURES="$FAILURES $PLATFORM"
+		eval $CMD || FAILURES="$FAILURES $PLATFORM"
 	done
 	if [ "$FAILURES" != "" ]; then
 	    echo "*** go-all FAILED on $FAILURES ***"
@@ -54,10 +54,10 @@ function go-build-all {
 	for PLATFORM in $PLATFORMS; do
 		GOOS=${PLATFORM%/*}
 		GOARCH=${PLATFORM#*/}
-		OUTPUT=`echo $@ | sed 's/\.go//'` 
+		OUTPUT=`echo $@ | sed 's/\.go//'`
 		CMD="go-${GOOS}-${GOARCH} build -o $OUTPUT-${GOOS}-${GOARCH} $@"
 		echo "$CMD"
-		$CMD || FAILURES="$FAILURES $PLATFORM"
+		eval $CMD || FAILURES="$FAILURES $PLATFORM"
 	done
 	if [ "$FAILURES" != "" ]; then
 	    echo "*** go-build-all FAILED on $FAILURES ***"
